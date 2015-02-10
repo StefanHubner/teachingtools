@@ -23,7 +23,8 @@ create table student(
 );	
 
 create table attendance(
-	week		integer primary key,
+	id 			integer primary key,
+	week		integer,
 	studentid	integer,
 	foreign key(studentid) references student(id)
 );	
