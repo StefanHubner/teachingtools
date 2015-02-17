@@ -13,10 +13,10 @@ import           Network.Wai.Handler.Warp (run)
 import 			 TeachingTools
 import Control.Monad
 
-data Course = Course { courseid :: Integer, name :: String }
+data TCourse = TCourse { courseid :: Integer, name :: String } deriving (Show)
 
-instance ToJSON Course where
-	toJSON (Course c n) = object ["ID" .= c, "Name" .= n]
+instance ToJSON TCourse where
+	toJSON (TCourse c n) = object ["ID" .= c, "Name" .= n]
 
 main :: IO ()
 main = run 3002 app
@@ -42,5 +42,5 @@ invalidJson ex = responseLBS
 modValue :: Value -> IO Value
 modValue _ = liftM (toJSON . map (toJSON . makeCourse)) getMyCourses
 	where 
-		makeCourse :: [String] -> Course
-		makeCourse l = Course (read (head l) :: Integer) (foldl1 (++) (tail l)) 
+		makeCourse :: [String] -> TCourse
+		makeCourse l = TCourse (read (head l) :: Integer) (foldl1 (++) (tail l)) 
