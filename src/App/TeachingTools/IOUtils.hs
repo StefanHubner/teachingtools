@@ -15,7 +15,7 @@ import TeachingTools.Utils
 queryDB :: String -> [SqlValue] -> IO [[(String, SqlValue)]]
 queryDB queryString queryPars = withRTSSignalsBlocked $ do
 	--conn <- connectSqlite3 (dbfile settings)
-	conn <- connectMySQL (mysqldb settings)
+	conn <- connectMySQL (defaultMySQLConnectInfo {mysqlHost = mysqlhost settings, mysqlUser = mysqluser settings, mysqlDatabase = mysqldb settings, mysqlPassword = mysqlpasswd settings})
 	stmt <- prepare conn queryString 
 	_ <- execute stmt queryPars
 	results <- fetchAllRowsAL' stmt
