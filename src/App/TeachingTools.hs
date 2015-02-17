@@ -79,6 +79,12 @@ showMyCourses = (\(y,_,_) -> queryAndPrintList queryString [toSql y]) =<< year
 		queryString = "select id, name, groupid from course where year = ?"
 		year = liftM (toWeekDate . utctDay) getCurrentTime 
 
+getMyCourses :: IO [[String]]
+getMyCourses = liftM parseResultAsStringList (year >>= (\(y,_,_) -> queryDB queryString [toSql y])) 
+	where 		
+		queryString = "select id, name, groupid from course where year = ?"
+		year = liftM (toWeekDate . utctDay) getCurrentTime 
+
 listCommands :: IO()
 listCommands = readFile "../../util/help.txt" >>= putStrLn
 
