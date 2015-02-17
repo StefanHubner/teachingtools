@@ -11,6 +11,7 @@ import           Network.HTTP.Types       (status200, status400)
 import           Network.Wai              (Application, Response, responseLBS)
 import           Network.Wai.Conduit      (sourceRequestBody)
 import           Network.Wai.Handler.Warp (run)
+import 			 TeachingTools
 
 main :: IO ()
 main = run 3002 app
