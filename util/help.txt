@@ -1,0 +1,12 @@
+listCommands                -
+showMyCourses               -   
+showAttendanceList          courseid 
+printAttendanceList         courseid
+newCourse                   code groupid year name
+reportAttendance            courseid calendarweek = {thisWeek, lastWeek, offsetWeek (-x)} 
+addStudentToCourse          courseid studentid name 
+dropStudent                 studentid 
+newTeamForCourse            courseid teamnr 
+addMembersToTeam            courseid teamnr [students]
+showTeamListByCourse        courseid
+listAttendanceCountByCourse courseid 

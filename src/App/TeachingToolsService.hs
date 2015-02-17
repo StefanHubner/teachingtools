@@ -2,8 +2,7 @@
 import           Control.Exception        (SomeException)
 import           Control.Exception.Lifted (handle)
 import           Control.Monad.IO.Class   (liftIO)
-import           Data.Aeson               (Value, encode, object, (.=), ToJSON, toJSON)
-import           Data.Aeson.Parser        (json)
+import           Data.Aeson               
 import           Data.Conduit             (($$))
 import           Data.Conduit.Attoparsec  (sinkParser)
 import           Network.HTTP.Types       (status200, status400)
@@ -12,8 +11,14 @@ import           Network.Wai.Conduit      (sourceRequestBody)
 import           Network.Wai.Handler.Warp (run)
 import 			 TeachingTools
 import Control.Monad
+import Control.Applicative
 
 data TCourse = TCourse { courseid :: Integer, name :: String } deriving (Show)
+data TRequest = TRequest { requestID :: String, parameters :: [String] }
+
+instance FromJSON TRequest where
+	parseJSON (Object v) = TRequest  <$> v .: "requestID" <*> v .: "parameters"
+	parseJSON _ 		 = mzero
 
 instance ToJSON TCourse where
 	toJSON (TCourse c n) = object ["ID" .= c, "Name" .= n]
@@ -41,10 +46,9 @@ invalidJson ex = responseLBS
 -- Application-specific logic would go here.
 modValue :: Value -> IO Value
 modValue request 
-	| parseRequest request == "GET_ALL_COURSES" = liftM ( (\v ->object ["Courses" .= v]) . toJSON . map (toJSON . makeCourse)) getMyCourses
+	| r == Success "GET_ALL_COURSES"   = liftM ( (\v ->object ["Courses" .= v]) . toJSON . map (toJSON . makeCourse)) getMyCourses
+	| otherwise 				       = return $ toJSON 'x' 
 	where 
+		r = liftM requestID (fromJSON request :: Result TRequest)
 		makeCourse :: [String] -> TCourse
 		makeCourse l = TCourse (read (head l) :: Integer) (foldl1 (++) (tail l)) 
-
-parseRequest :: Value -> String
-parseRequest _ = "GET_ALL_COURSES"
