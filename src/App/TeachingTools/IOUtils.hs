@@ -1,17 +1,21 @@
 module TeachingTools.IOUtils where 
 
 import Database.HDBC.Sqlite3 (connectSqlite3)
+import Database.HDBC.MySQL
 import Database.HDBC
 import System.Process
 import System.IO
 import Control.Monad
+import Data.Time
+import Data.Time.Calendar.WeekDate
 
 import TeachingTools.Settings
 import TeachingTools.Utils
 
 queryDB :: String -> [SqlValue] -> IO [[(String, SqlValue)]]
-queryDB queryString queryPars = do
-	conn <- connectSqlite3 (dbfile settings)
+queryDB queryString queryPars = withRTSSignalsBlocked $ do
+	--conn <- connectSqlite3 (dbfile settings)
+	conn <- connectMySQL (mysqldb settings)
 	stmt <- prepare conn queryString 
 	_ <- execute stmt queryPars
 	results <- fetchAllRowsAL' stmt
@@ -61,4 +65,13 @@ writeLatexFile dir filebasename = writeFile $ dir ++ filebasename ++ ".tex"
 
 queryAndPrintList :: String -> [SqlValue] -> IO()
 queryAndPrintList s p = queryDB s p >>= mapM return . unlines . map unwords . parseResultAsStringList >>= putStr
+
+thisWeek :: IO Int
+thisWeek = offsetWeek 0
+
+lastWeek :: IO Int
+lastWeek = offsetWeek (-1) 
+
+offsetWeek :: Integer -> IO Int
+offsetWeek offset = liftM (toWeekDate . addDays (offset*7). utctDay) getCurrentTime >>= (\(_,cw,_) -> return cw)
 

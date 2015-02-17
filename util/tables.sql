@@ -31,7 +31,8 @@ create table attendance(
 
 create table assignment(
 	id			integer primary key,
-	weight		real	
+	weight		real,	
+	maxpoints	real
 );
 
 create table question(
