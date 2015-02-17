@@ -112,3 +112,6 @@ showAssignmentResult courseId assignmentid = queryAndPrintList queryString [toSq
 		"and result.questionid = question.id and result.assignmentid = assignment.id ",
 		"and student.courseid = ? and assignment.id = ? ",
 		"group by student.id" ]
+
+showVersion :: IO()
+showVersion = putStrLn "0.5"

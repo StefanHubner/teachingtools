@@ -40,7 +40,11 @@ invalidJson ex = responseLBS
 
 -- Application-specific logic would go here.
 modValue :: Value -> IO Value
-modValue _ = liftM (toJSON . map (toJSON . makeCourse)) getMyCourses
+modValue request 
+	| parseRequest request == "GET_ALL_COURSES" = liftM ( (\v ->object ["Courses" .= v]) . toJSON . map (toJSON . makeCourse)) getMyCourses
 	where 
 		makeCourse :: [String] -> TCourse
 		makeCourse l = TCourse (read (head l) :: Integer) (foldl1 (++) (tail l)) 
+
+parseRequest :: Value -> String
+parseRequest _ = "GET_ALL_COURSES"
